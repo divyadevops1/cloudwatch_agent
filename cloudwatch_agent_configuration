@@ -1,0 +1,77 @@
+sudo yum install -y amazon-cloudwatch-agent
+
+(optional) If you plan to kick off exports or other AWS operations from the instance itself, install the AWS CLI v2:
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+unzip awscliv2.zip
+sudo ./aws/install
+
+
+Verify with
+aws   - –version
+
+On Amazon Linux 2 (and many modern distro-by-default), system logs go into the journal, not into /var/log/messages. If you want to have a traditional /var/log/messages file, you need to install and enable a syslog daemon (rsyslog or syslog-ng) that writes out to it.
+
+
+Install rsyslog
+
+sudo yum install -y rsyslog
+
+Enable & start the rsyslog service
+
+sudo systemctl enable rsyslog
+sudo systemctl start rsyslog
+
+
+
+
+Verify /var/log/messages appears
+ls -lh /var/log/messages
+# and tail a few lines:
+sudo tail -n 20 /var/log/messages
+You should now see new log entries there. From this point on, configuring the CloudWatch Agent to watch /var/log/messages will work out-of-the-box.
+
+IT WOULD SHOW ALREADY INSTALLED
+sudo yum install amazon-cloudwatch-agent -y
+
+Create the CloudWatch Agent Configuration File
+You can create the config using the wizard:
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+
+	Do you want to monitor any log files?
+1. yes
+2. no
+default choice: [1]:
+Log file path:
+/var/log/messages
+Log group name:
+default choice: [messages]
+newcwagent
+Log group class:
+1. STANDARD
+2. INFREQUENT_ACCESS
+default choice: [1]:
+
+Log stream name:
+default choice: [{instance_id}]
+
+ Start the Agent
+Start the agent with the config file:
+bash
+CopyEdit
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json \
+  -s
+
+✅ Check Status
+To see if the agent is running:
+bash
+CopyEdit
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+
+
+View Metrics & Logs
+Go to the AWS Console → CloudWatch → Metrics / Logs to view the data.
+
