@@ -1,0 +1,110 @@
+What is the CloudWatch Agent?
+Amazon CloudWatch Agent lets you collect system-level metrics (like CPU, memory, disk) and logs from your EC2 instances (or on-premises servers) to Amazon CloudWatch.
+________________________________________
+🛠️ Step-by-Step Setup
+1. Install the CloudWatch Agent
+On Amazon Linux, Ubuntu, or Windows, you need to install the agent manually or use SSM.
+For Amazon Linux / Ubuntu:
+bash
+CopyEdit
+sudo yum install amazon-cloudwatch-agent -y
+Or on Ubuntu:
+bash
+CopyEdit
+sudo apt-get install amazon-cloudwatch-agent -y
+________________________________________
+2. Create the CloudWatch Agent Configuration File
+You can create the config using the wizard:
+bash
+CopyEdit
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+This interactive command will ask questions like:
+•	Do you want to monitor metrics, logs, or both?
+•	Which log files to collect?
+•	What metrics (CPU, disk, memory)?
+•	Output format (JSON)?
+•	IAM permissions?
+At the end, it will generate a config file at:
+swift
+CopyEdit
+/opt/aws/amazon-cloudwatch-agent/bin/config.json
+You can also save it to a parameter store (for centralized config management).
+________________________________________
+3. Start the Agent
+Start the agent with the config file:
+bash
+CopyEdit
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json \
+  -s
+This command:
+•	Fetches the config
+•	Monitors the EC2 instance
+•	Starts the agent
+________________________________________
+4. IAM Role (Permissions)
+Your EC2 instance needs an IAM role with permissions like:
+json
+CopyEdit
+{
+  "Effect": "Allow",
+  "Action": [
+    "cloudwatch:PutMetricData",
+    "logs:PutLogEvents",
+    "logs:DescribeLogStreams",
+    "logs:CreateLogStream",
+    "logs:CreateLogGroup"
+  ],
+  "Resource": "*"
+}
+Attach this role to the EC2 instance.
+________________________________________
+✅ Check Status
+To see if the agent is running:
+bash
+CopyEdit
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -m ec2 -a status
+________________________________________
+📊 View Metrics & Logs
+Go to the AWS Console → CloudWatch → Metrics / Logs to view the data.
+________________________________________
+📄 Sample Config File (Basic)
+Here's a very simple JSON config (metrics only):
+json
+CopyEdit
+{
+  "agent": {
+    "metrics_collection_interval": 60,
+    "run_as_user": "root"
+  },
+  "metrics": {
+    "metrics_collected": {
+      "cpu": {
+        "measurement": [
+          "cpu_usage_idle",
+          "cpu_usage_iowait"
+        ],
+        "metrics_collection_interval": 60
+      },
+      "disk": {
+        "measurement": [
+          "used_percent"
+        ],
+        "resources": [
+          "/"
+        ],
+        "metrics_collection_interval": 60
+      },
+      "mem": {
+        "measurement": [
+          "mem_used_percent"
+        ],
+        "metrics_collection_interval": 60
+      }
+    }
+  }
+}
+________________________________________
+
