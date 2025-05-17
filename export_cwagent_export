@@ -1,59 +1,35 @@
-#S3 bucket policy for exporting logs from cloudwatch
-
-
 {
-    "Version": "2012-10-17",
-    "Statement": [
-        {
-            "Sid": "AllowCloudWatchLogsPutWithACL",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "logs.us-east-2.amazonaws.com"
-            },
-            "Action": "s3:PutObject",
-            "Resource": "arn:aws:s3:::export-bucket-qa/*",
-            "Condition": {
-                "StringEquals": {
-                    "s3:x-amz-acl": "bucket-owner-full-control"
-                }
-            }
-        },
-        {
-            "Sid": "AllowCloudWatchLogsReadAndAcl",
-            "Effect": "Allow",
-            "Principal": {
-                "Service": "logs.us-east-2.amazonaws.com"
-            },
-            "Action": [
-                "s3:GetBucketAcl",
-                "s3:GetBucketLocation",
-                "s3:GetObject"
-            ],
-            "Resource": [
-                "arn:aws:s3:::export-bucket-qa",
-                "arn:aws:s3:::export-bucket-qa/*"
-            ]
-        }
-    ]
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Sid": "AllowCloudWatchLogsPutWithACL",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "logs.us-east-2.amazonaws.com"
+			},
+			"Action": "s3:PutObject",
+			"Resource": "arn:aws:s3:::export-bucket-qa/*",
+			"Condition": {
+				"StringEquals": {
+					"s3:x-amz-acl": "bucket-owner-full-control"
+				}
+			}
+		},
+		{
+			"Sid": "AllowCloudWatchLogsReadAndAcl",
+			"Effect": "Allow",
+			"Principal": {
+				"Service": "logs.us-east-2.amazonaws.com"
+			},
+			"Action": [
+				"s3:GetBucketAcl",
+				"s3:GetBucketLocation",
+				"s3:GetObject"
+			],
+			"Resource": [
+				"arn:aws:s3:::export-bucket-qa",
+				"arn:aws:s3:::export-bucket-qa/*"
+			]
+		}
+	]
 }
-
-#This bucket policy consists of two statements, each granting a specific set of S3 permissions to the CloudWatch Logs service principal (logs.us-east-2.amazonaws.com):
-#	Statement “AllowCloudWatchLogsPutWithACL”o	Action: s3:PutObject
-#	Resource: arn:aws:s3:::export-bucket-qa/* (all objects in the bucket)
-#	Condition: Requires that any object upload include the ACL bucket-owner-full-control
-#	Effect: Allows CloudWatch Logs to write (upload) exported log files into the bucket, ensuring the bucket owner retains full control of each object
-#	Statement “AllowCloudWatchLogsReadAndAcl”
-#	Actions:
-#	s3:GetBucketAcl — lets CloudWatch Logs retrieve the bucket’s ACL to confirm permissions
-#	s3:GetBucketLocation — lets CloudWatch Logs verify the bucket’s region
-#	s3:GetObject — lets CloudWatch Logs read objects in the bucket (if needed for validation or retries)
-#	Resource:
-#	arn:aws:s3:::export-bucket-qa (the bucket itself)
-#	arn:aws:s3:::export-bucket-qa/* (all objects within it)
-#	Effect: Allows CloudWatch Logs to confirm it has the right to write into the bucket and to read back objects or metadata as part of the export process
-________________________________________
-# In summary:
-#	PutObject (with ACL condition) lets the Logs service upload your exported log files.
-#	GetBucketAcl/GetBucketLocation let it verify bucket permissions and region.
-#	GetObject lets it read objects back if needed.
-
