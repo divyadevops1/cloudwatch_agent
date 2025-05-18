@@ -1,0 +1,30 @@
+Step-by-step Installation of CloudWatch Agent on Ubuntu
+1. Download the CloudWatch Agent package
+wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+2. Install the .deb package
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+3. Create the CloudWatch Agent configuration file
+You can use the wizard (interactive CLI) to generate a configuration file:
+
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-config-wizard
+Alternatively, you can create your own JSON config and save it to:
+
+/opt/aws/amazon-cloudwatch-agent/bin/config.json
+Example config (basic metrics + logs):
+
+
+4. Start the CloudWatch Agent
+
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config \
+  -m ec2 \
+  -c file:/opt/aws/amazon-cloudwatch-agent/bin/config.json \
+  -s
+5. (Optional) Enable it to start on boot
+
+sudo systemctl enable amazon-cloudwatch-agent
+📝 Notes:
+Ensure your EC2 instance has a proper IAM role with CloudWatch permissions (e.g., CloudWatchAgentServerPolicy).
+
+You can monitor logs as well by including a logs section in your config.
+
