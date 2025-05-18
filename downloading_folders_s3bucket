@@ -1,0 +1,88 @@
+It looks like your S3 object path might include special characters like square brackets ([, ]), which need to be quoted or escaped.
+Here’s how to properly format your command:
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/" .
+Explanation:
+•	The whole S3 path is wrapped in quotes ("...") because it contains special characters like [, ], and -.
+•	. means "download to the current directory".
+________________________________________
+🧪 Example Result
+If successful, it will download the file(s) or folder to your Ubuntu home directory.
+________________________________________
+✅ Tip: To Copy All Files Recursively (if it's a folder)
+If that S3 path is a folder, use the --recursive flag:
+bash
+CopyEdit
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/" . --recursive
+Let me know if you’re trying to download a single file or an entire folder — I can give you the exact command.
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-$LATEST246bd092c9da4193bd6d5b7ac91f177b/" . --recursive
+Or, list first to verify:
+CopyEdit
+aws s3 ls s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/
+That will show you the exact object/folder keys under that path. Once you get the correct key name, plug it into your aws s3 cp command.
+________________________________________
+🧠 Tip: $LATEST in the path
+In your terminal, $LATEST may be getting interpreted as a shell variable (which is empty). So always quote the path or escape the $ like this:
+bash
+CopyEdit
+# Method 1: Use single quotes to prevent shell from interpreting $
+aws s3 cp 's3://maybucket2024divya/exportedlogs/.../2025-05-18-$LATEST...' .
+
+# Method 2: Escape the $
+aws s3 cp s3://maybucket2024divya/exportedlogs/.../2025-05-18-\$LATEST... .
+________________________________________
+________________________________________
+✅ To Download One Folder (Example):
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/" . --recursive
+This will recursively download all contents from that folder into your current directory (.).
+________________________________________
+🔁 To Download All of Them:
+You can also copy the entire parent prefix:
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/" . --recursive
+This downloads all four log folders.
+________________________________________
+To copy the folder to your current directory (.), include the --recursive flag and destination like this:
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/" . --recursive
+Explanation:
+•	s3://... = Source S3 folder
+•	. = Current directory on your machine
+•	--recursive = Copy everything inside that folder
+________________________________________
+
+✅ Download All Log Folders to Current Directory
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/" . --recursive
+This will download:
+•	2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/
+•	2025-05-18-[$LATEST]2bf0222b69394c3a8a809afc95ec94c2/
+•	2025-05-18-[$LATEST]43ad9ab09aff43dab4baeddf71701248/
+•	2025-05-18-[$LATEST]9ada258f0de14082a9c8f7f4d179ad53/
+into your current directory.
+________________________________________
+📁 Optional: Download a Single Folder (Example)
+If you only want one specific folder:
+bash
+CopyEdit
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/2025-05-18-[$LATEST]246bd092c9da4193bd6d5b7ac91f177b/" . --recursive
+________________________________________
+
+✅ Download All Folders Recursively
+bash
+CopyEdit
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/" . --recursive
+This will:
+•	Go into each folder like 2025-05-18-[$LATEST]...
+•	Download every file inside
+•	Place everything in your current local directory (.)
+________________________________________
+✅ Example Output (on success)
+You’ll see output like:
+download: s3://maybucket2024divya/.../file1.json to ./file1.json
+download: s3://maybucket2024divya/.../file2.gz to ./file2.gz
+...
+________________________________________
+💡 Optional: Save to a Specific Folder
+If you want to save everything into a folder named logs, do this:
+bash
+CopyEdit
+mkdir -p logs
+aws s3 cp "s3://maybucket2024divya/exportedlogs/392d6d21-e1a0-429c-811e-57cf428c2610/" ./logs --recursive
+
