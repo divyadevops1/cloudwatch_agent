@@ -21,7 +21,7 @@ scp /home/ec2-user/newfile.txt ec2-user@3.145.86.177:/home/ec2-user/files
 test the file exists in destination machine.
 
 
-if you want to transfer files from local machine to remote server 
+if you want to transfer files from local machine to remote server give public key of the destination machine
  scp -i "/c/Users/HP/Downloads/docker_class1.pem"  "/c/Users/HP/Downloads/yesterday.txt" ubuntu@13.59.173.22:/home/ubuntu/files/
 yesterday.txt  
 
@@ -33,7 +33,8 @@ transferring directories
 
 check in the remote machine the directory exists
 
-
+if you want to transfer the files from destiantion machine to source machine
+scp  ec2-user@3.145.86.177:/home/ec2-user/files/testing_scp .
 
 
 
