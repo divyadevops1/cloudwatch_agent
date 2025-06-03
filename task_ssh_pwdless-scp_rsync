@@ -1,0 +1,39 @@
+ssh passwordless from ec2-A to ec2-B
+source A
+$ssh-keygen -t rsa -b 2048
+It will create:
+~/.ssh/id_rsa (private key)
+~/.ssh/id_rsa.pub (public key)
+
+$ cat ~/.ssh/id_rsa.pub
+copy the output
+# On Machine B
+mkdir -p ~/.ssh
+echo "<paste-public-key-here>" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+
+test connection from source to remote dest ip B
+$ssh ec2-user@<remote-ip>
+ example:
+$ ssh ec2-user@3.145.86.177
+if it connects 
+scp /home/ec2-user/newfile.txt ec2-user@3.145.86.177:/home/ec2-user/files
+test the file exists in destination machine.
+
+
+if you want to transfer files from local machine to remote server 
+ scp -i "/c/Users/HP/Downloads/docker_class1.pem"  "/c/Users/HP/Downloads/yesterday.txt" ubuntu@13.59.173.22:/home/ubuntu/files/
+yesterday.txt  
+
+check in the remote server the file existed .
+
+
+transferring directories
+ scp -i "/c/Users/HP/Downloads/docker_class1.pem" -r "/c/Users/HP/Downloads/today/" ubuntu@13.59.173.22:/home/ubuntu/files/
+
+check in the remote machine the directory exists
+
+
+
+
+
