@@ -62,3 +62,48 @@ to get the files from the destination machine to source machine
 from source machine
 scp ec2-user@18.118.126.116:/home/ec2-user/current_file.txt .
 
+rsync
+
+OPTION 1: Practice Locally on One EC2 Machine (Safer for Beginners)
+Step 1: Create two folders
+mkdir -p ~/source_folder ~/destination_folder
+
+Step 2: Add sample files
+echo "Hello from rsync" > ~/source_folder/file1.txt
+echo "Another file" > ~/source_folder/file2.txt
+
+Step 3: Run rsync to sync from source to destination
+rsync -av ~/source_folder/ ~/destination_folder/
+
+Step 4: Verify
+ls ~/destination_folder
+cat ~/destination_folder/file1.txt
+
+✅ OPTION 2: Practice Between Two EC2 Instances (Real Use Case)
+Ensure both EC2 instances are running, and that:
+
+You have the .pem file
+
+SSH is working between them
+
+Step 1: Create a test file on EC2-1
+
+mkdir ~/test_rsync
+echo "EC2 to EC2 rsync test" > ~/test_rsync/demo.txt
+Step 2: Run rsync from EC2-1 to EC2-2
+
+//if you already tried ssh passwordless connection between ec2 instnace if your ec2 source is already connecting ec2 passwordless already from ec2 source do this
+mkdir ~/test_rsync
+echo "EC2 to EC2 rsync test" > ~/test_rsync/demo.txt
+rsync -avz  ~/test_rsync/ ec2-user@18.118.126.116:/home/ec2-user/received/
+or
+rsync -avz -e "ssh -i your-key.pem" ~/test_rsync/ ec2-user@<EC2-2-Public-IP>:/home/ec2-user/received/
+Replace your-key.pem and <EC2-2-Public-IP> with your values.
+
+Step 3: SSH into EC2-2 and verify
+
+ssh -i your-key.pem ec2-user@<EC2-2-Public-IP>
+ls ~/received
+cat ~/received/demo.txt
+
+
