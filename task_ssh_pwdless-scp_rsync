@@ -57,3 +57,8 @@ $ ssh ec2-user@3.145.86.177
 if it connects 
 scp /home/ec2-user/newfile.txt ec2-user@3.145.86.177:/home/ec2-user/files
 test the file exists in destination machine.
+
+to get the files from the destination machine to source machine
+from source machine
+scp ec2-user@18.118.126.116:/home/ec2-user/current_file.txt .
+
