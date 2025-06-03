@@ -37,4 +37,23 @@ if you want to transfer the files from destiantion machine to source machine
 scp  ec2-user@3.145.86.177:/home/ec2-user/files/testing_scp .
 
 
+transferring file between one instnace has pem key and other instance has no pem key trying to connect first by copying the public key to the other instance authorized keys
+source machine first find where is the pem key 
+ls ~/Downloads/*.pem
+find ~/Downloads -name "*.pem"
+cd .ssh
+ls
+cat id_rsa.pub
+//copy the public key
+on destination machine which as no pem key 
+ mkdir -p ~/.ssh
+ echo "<paste-public-key-here>" >> ~/.ssh/authorized_keys
+ chmod 600 ~/.ssh/authorized_keys
 
+test connection from source to remote dest ip B  public ip
+$ssh ec2-user@<remote-ip>
+ example:
+$ ssh ec2-user@3.145.86.177
+if it connects 
+scp /home/ec2-user/newfile.txt ec2-user@3.145.86.177:/home/ec2-user/files
+test the file exists in destination machine.
