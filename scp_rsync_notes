@@ -1,0 +1,74 @@
+SSH passwordless connection
+
+Step 1: Generate SSH Keys (on the source machine)
+
+Generate an SSH key pair (public and private keys) by running the following command:
+ssh-keygen -t rsa -b 4096
+
+# -t flag specifies the type of key (RSA in this case).
+# -b 4096 flag specifies the length of the key (4096 bits is recommended for strong security).
+ 
+
+When prompted:
+Press Enter to accept the default file location (~/.ssh/id_rsa) to store the private key.
+Optionally, set a passphrase for added security (you can leave it blank and press enter for no passphrase).
+Step 2: Copy the Public Key to the Remote Machine ($HOME/.ssh/id_rsa.pub)
+
+You need to copy your public key (~/.ssh/id_rsa.pub) to the remote machine where you want to SSH into passwordless.
+cat ~/.ssh/id_rsa.pub
+log in the remote machine in normal way using password/pem file. Open or create the authorized_keys file: 
+sudo vi ~/.ssh/authorized_keys
+Paste your public key (from ~/.ssh/id_rsa.pub) into the above authorized_keys file and save it.
+Ensure proper permissions for the .ssh directory and authorized_keys file:
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
+Final Step: Test the Passwordless SSH Login
+
+try logging in from the source machine: 
+ssh <username>@<remote_host>
+
+# <username> valid user to login with SSH (ubuntu)
+# <remote_host> IP address / DNS of the remote machine to login.
+SCP (Secure Copy)
+
+scp is used to copy files or directories between local and remote systems over SSH.
+scp can be used to copy files and directories within server also like cp.
+Always copies the entire file again, when scp is executed multiple time even if file hasn’t changed.
+use scp when we need a simple, one-time file transfers when efficiency is not a concern.
+Doesn’t support resuming transfers or syncing or copying only changes.
+scp [options] <source> <destination>
+
+options:
+       -r: Recursively copy entire directories.
+       -i <identity_file>: Use a specific private key for SSH authentication.
+       -v: Enable verbose mode (helps with debugging).
+       -P <port>: Specify a custom port instead of 22 (note the uppercase P).
+To copy file from local to remote machine 
+
+scp <local_path> <username>@<remote_address>:<destination_path>
+To copy file from remote to local machine 
+
+scp <username>@<remote_address>:<destination_path> <local_path>
+rsync 
+
+rsync is a more advanced and efficient tool for copying files and directories over SSH. 
+rsync can resume interrupted transfers as it compare and copies the files/ directories from local to remote.
+Only copies the changes (or differences) between source and destination, making it faster for repeated transfers.
+Ideal for backups, syncing large datasets, or when you need to transfer files multiple times (incremental updates).
+It is often preferred over scp due to its ability to sync only the changed parts of files, making it faster for repeated transfers, and its ability to resume interrupted transfers.
+rsync [options] <source> <destination>
+
+options:
+       -a: Archive mode (preserves permissions, symlinks, timestamps, etc.).
+       -v: Verbose output (displays detailed information about the transfer).
+       -z: Compress file data during the transfer.
+       --delete: Delete files from the destination that no longer exist in the source (used for mirroring).
+       --progress: Show progress during transfer.
+       --dry-run: Perform a trial run without making any changes, helpful for testing.
+       -e <ssh_command>: Specify a custom SSH command or options (e.g., port).
+To copy file from local to remote machine 
+
+rsync <local_path> <username>@<remote_address>:<destination_path>
+To copy file from remote to local machine 
+
+rsync <username>@<remote_address>:<destination_path> <local_path>
